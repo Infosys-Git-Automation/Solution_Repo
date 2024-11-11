@@ -12,7 +12,6 @@ jobs:
     
     - name: Get PR details
       run: |
-        PR_NO = ${{ github.event.pull_request.number }}
-        echo "PR_NO"
+        echo "PR_NO: ${{ github.event.pull_request.number }}"
       env:
         GH_TOKEN: ${{ github.token }}
