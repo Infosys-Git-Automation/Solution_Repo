@@ -19,6 +19,7 @@ jobs:
         sudo apt install gh -y
 
     - name: Get PR details
+      id: get_pr_details
       run: |
         PR_NO=${{ github.event.pull_request.number }}
         PR_BODY=$(gh pr view $PR_NO)
@@ -30,7 +31,7 @@ jobs:
         echo "USERNAME=$USERNAME" >> $GITHUB_ENV
         echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
       env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
+        GH_TOKEN: ${{ github.token }}
 
     - name: Validate user existence in org and repo
       id: validate
@@ -50,4 +51,4 @@ jobs:
           exit 1
         fi   
       env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
+        GH_TOKEN: ${{ github.token }}
