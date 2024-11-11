@@ -20,7 +20,9 @@ jobs:
         REPO_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Repo Name\*\*: \[).*(?=\])')
         echo "ORG_NAME=$ORG_NAME" 
         echo "USERNAME=$USERNAME" 
-        echo "REPO_NAME=$REPO_NAME" 
+        echo "REPO_NAME=$REPO_NAME"
+      env:
+        GH_TOKEN: ${{ github.token }}
 
     - name: Validate user existence in org and repo
       id: validate
@@ -34,7 +36,6 @@ jobs:
         if [ "$USER_PERMISSIONS" != "admin" ]; then
           echo "User $USER does not have owner permissions in the repository $REPO"
           exit 1
-        fi
-             
+        fi   
       env:
         GH_TOKEN: ${{ github.token }}
