@@ -54,3 +54,10 @@ jobs:
         echo "Validation successful"
       env:
         GH_TOKEN: ${{ github.token }}
+
+    - name: Run Snyk scan
+      uses: snyk/actions@master
+      with:
+        args: test
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
