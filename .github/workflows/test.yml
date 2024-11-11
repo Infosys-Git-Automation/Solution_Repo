@@ -1,0 +1,23 @@
+on:
+   push:
+   workflow_dispatch:
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a one-line script
+        run: |
+             gh api https://api.github.com/users/Ishu1204/repos
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: 
+             gh repo list
+             gh api /repos/Ishu1204/Infosys-Git-Automation
+             gh api /repos/Infosys-Git-Automation
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
