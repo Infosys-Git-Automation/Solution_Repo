@@ -49,7 +49,11 @@ jobs:
         if [ "$USER_PERMISSIONS" != "admin" ]; then
           echo "User $USER does not have owner permissions in the repository $REPO"
           exit 1
-        fi
+        fi   
+
+        echo "Validation successful"
+      env:
+        GH_TOKEN: ${{ github.token }}
 
         echo "Validation successful"
       env:
