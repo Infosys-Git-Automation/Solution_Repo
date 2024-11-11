@@ -5,24 +5,11 @@ on:
     types: [opened, edited, synchronize, reopened]
 
 jobs:
-  validate-and-scan:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Set up GitHub CLI
-      run: |
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-        sudo apt update
-        sudo apt install gh -y
-
+    - uses: actions/checkout@v2
     - name: Get PR details
-      env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body')
         ORG_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Org Name\*\*: \[).*(?=\])')
@@ -31,6 +18,8 @@ jobs:
         echo "ORG_NAME=$ORG_NAME" >> $GITHUB_ENV
         echo "USERNAME=$USERNAME" >> $GITHUB_ENV
         echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
+      env:
+        GH_TOKEN: ${{ secrets.GH_PAT }}
 
     - name: Validate user existence in org and repo
       id: validate
