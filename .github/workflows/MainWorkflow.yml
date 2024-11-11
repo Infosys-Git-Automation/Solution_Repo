@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    
     - name: Get PR details
       run: |
         PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body')
@@ -19,7 +20,7 @@ jobs:
         echo "USERNAME=$USERNAME" >> $GITHUB_ENV
         echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
       env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
+        GH_TOKEN: ${{ github.token }}
 
     - name: Validate user existence in org and repo
       id: validate
@@ -41,7 +42,7 @@ jobs:
           exit 1
         fi
       env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
+        GH_TOKEN: ${{ github.token }}
 
     - name: Run Snyk scan
       uses: snyk/actions@master
