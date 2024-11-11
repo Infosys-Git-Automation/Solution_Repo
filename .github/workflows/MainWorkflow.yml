@@ -22,7 +22,7 @@ jobs:
 
     - name: Get PR details
       run: |
-        GH_TOKEN="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"
+        GH_TOKEN="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"
         PR_BODY=$(GH_TOKEN=$GH_TOKEN gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body')
         ORG_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Org Name\*\*: \[).*(?=\])')
         USERNAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Username\*\*: \[).*(?=\])')
@@ -33,7 +33,7 @@ jobs:
 
     - name: Validate user existence in org and repo
       run: |
-        GH_TOKEN="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"
+        GH_TOKEN="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"
         ORG=$ORG_NAME
         REPO=$REPO_NAME
         USER=$USERNAME
