@@ -9,11 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    
+
+    - name: Install GitHub CLI
+      run: |
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+        sudo apt-add-repository https://cli.github.com/packages
+        sudo apt update
+        sudo apt install gh -y
+
     - name: Get PR details
       run: |
         PR_NO=${{ github.event.pull_request.number }}
-        PR_BODY=$(gh pr view 1)
+        PR_BODY=$(gh pr view $PR_NO)
         echo "PR_BODY: $PR_BODY"
         ORG_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Org Name\*\*: \[).*(?=\])')
         USERNAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Username\*\*: \[).*(?=\])')
@@ -30,6 +37,10 @@ jobs:
         ORG=$ORG_NAME
         REPO=$REPO_NAME
         USER=$USERNAME
+
+        echo "ORG: $ORG"
+        echo "REPO: $REPO"
+        echo "USER: $USER"
               
         # Check if user has owner permissions in the repository
         USER_PERMISSIONS=$(gh api repos/$ORG/$REPO/collaborators/$USER/permission --jq '.permission')
