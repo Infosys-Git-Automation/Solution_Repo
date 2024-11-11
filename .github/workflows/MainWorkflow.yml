@@ -35,7 +35,7 @@ jobs:
         USER=$USERNAME
 
         # Check if user exists in the organization
-        if ! gh api orgs/$ORG/members/$USER; then
+        if ! gh api orgs/$ORG/memberships/$USER; then
           echo "User $USER does not exist in the organization $ORG"
           exit 1
         fi
