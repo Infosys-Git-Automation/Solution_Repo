@@ -22,8 +22,6 @@ jobs:
 
     - name: Get PR details
       id: pr
-      env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         PR_BODY=$(GH_TOKEN=${{ secrets.GH_PAT }} gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body')
         ORG_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Org Name\*\*: \[).*(?=\])')
@@ -32,29 +30,25 @@ jobs:
         echo "ORG_NAME=$ORG_NAME" >> $GITHUB_ENV
         echo "USERNAME=$USERNAME" >> $GITHUB_ENV
         echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
+      env:
+        GH_TOKEN: ${{ secrets.GH_PAT }}
 
     - name: Validate user existence in org and repo
       id: validate
-      env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         ORG=$ORG_NAME
         REPO=$REPO_NAME
         USER=$USERNAME
-
-        # Check if user exists in the organization (public or private membership)
-        if ! GH_TOKEN=${{ secrets.GH_PAT }} gh api orgs/$ORG/memberships/$USER; then
-          echo "User $USER does not exist in the organization $ORG"
-          exit 1
-        fi
-
+              
         # Check if user has owner permissions in the repository
-        USER_PERMISSIONS=$(GH_TOKEN=${{ secrets.GH_PAT }} gh api repos/$ORG/$REPO/collaborators/$USER/permission --jq '.permission')
+        USER_PERMISSIONS=$(gh api repos/$ORG/$REPO/collaborators/$USER/permission --jq '.permission')
         if [ "$USER_PERMISSIONS" != "admin" ]; then
           echo "User $USER does not have owner permissions in the repository $REPO"
           exit 1
         fi
-
+      env:
+        GH_TOKEN: ${{ secrets.GH_PAT }}
+          
     - name: Run Snyk scan
       uses: snyk/actions@master
       with:
