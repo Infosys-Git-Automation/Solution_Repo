@@ -15,15 +15,20 @@ jobs:
     - name: Get PR details
       id: pr
       run: |
-        echo "PR_USER=$(gh pr view ${{ github.event.pull_request.number }} --json author --jq '.author.login')" >> $GITHUB_ENV
-        echo "PR_REPO=${{ github.repository }}" >> $GITHUB_ENV
+        PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body')
+        ORG_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Org Name\*\*: \[).*(?=\])')
+        USERNAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Username\*\*: \[).*(?=\])')
+        REPO_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Repo Name\*\*: \[).*(?=\])')
+        echo "ORG_NAME=$ORG_NAME" >> $GITHUB_ENV
+        echo "USERNAME=$USERNAME" >> $GITHUB_ENV
+        echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
 
     - name: Validate user existence in org and repo
       id: validate
       run: |
-        ORG=${{ github.repository_owner }}
-        REPO=${{ github.event.repository.name }}
-        USER=$PR_USER
+        ORG=$ORG_NAME
+        REPO=$REPO_NAME
+        USER=$USERNAME
 
         # Check if user exists in the organization
         if ! gh api orgs/$ORG/members/$USER; then
