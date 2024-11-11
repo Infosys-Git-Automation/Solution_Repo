@@ -19,13 +19,13 @@ jobs:
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
         sudo apt update
         sudo apt install gh -y
-      
+
     - name: Get PR details
       id: pr
       env:
-        GH_TOKEN:  ${{ secrets.GH_PAT }}
+        GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
-        PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body')
+        PR_BODY=$(GH_TOKEN=${{ secrets.GH_PAT }} gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body')
         ORG_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Org Name\*\*: \[).*(?=\])')
         USERNAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Username\*\*: \[).*(?=\])')
         REPO_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Repo Name\*\*: \[).*(?=\])')
@@ -36,20 +36,20 @@ jobs:
     - name: Validate user existence in org and repo
       id: validate
       env:
-        GH_TOKEN:  ${{ secrets.GH_PAT }}
+        GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         ORG=$ORG_NAME
         REPO=$REPO_NAME
         USER=$USERNAME
 
-        # Check if user exists in the organization
-        if ! gh api orgs/$ORG/memberships/$USER; then
+        # Check if user exists in the organization (public or private membership)
+        if ! GH_TOKEN=${{ secrets.GH_PAT }} gh api orgs/$ORG/memberships/$USER; then
           echo "User $USER does not exist in the organization $ORG"
           exit 1
         fi
 
         # Check if user has owner permissions in the repository
-        USER_PERMISSIONS=$(gh api repos/$ORG/$REPO/collaborators/$USER/permission --jq '.permission')
+        USER_PERMISSIONS=$(GH_TOKEN=${{ secrets.GH_PAT }} gh api repos/$ORG/$REPO/collaborators/$USER/permission --jq '.permission')
         if [ "$USER_PERMISSIONS" != "admin" ]; then
           echo "User $USER does not have owner permissions in the repository $REPO"
           exit 1
