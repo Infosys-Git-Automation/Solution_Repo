@@ -17,7 +17,7 @@ jobs:
       - name: Run a multi-line script
         run: |
              gh repo list
-             gh api /repos/Ishu1204/Infosys-Git-Automation
-             gh api /repos/Infosys-Git-Automation
+             gh api https://api.github.com/repos/Ishu1204/Infosys-Git-Automation
+             gh api https://api.github.com/repos/Infosys-Git-Automation
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
