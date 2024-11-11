@@ -23,7 +23,7 @@ jobs:
     - name: Get PR details
       id: pr
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body')
         ORG_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Org Name\*\*: \[).*(?=\])')
@@ -36,7 +36,7 @@ jobs:
     - name: Validate user existence in org and repo
       id: validate
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         ORG=$ORG_NAME
         REPO=$REPO_NAME
