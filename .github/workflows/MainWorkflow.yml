@@ -1,4 +1,4 @@
-name: Validate and Snyk Scan
+name: Main Workflow
 
 on:
   pull_request:
@@ -23,8 +23,6 @@ jobs:
 
     - name: Validate user existence in org and repo
       id: validate
-      env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         ORG=$ORG_NAME
         REPO=$REPO_NAME
@@ -42,6 +40,8 @@ jobs:
           echo "User $USER does not have owner permissions in the repository $REPO"
           exit 1
         fi
+      env:
+        GH_TOKEN: ${{ secrets.GH_PAT }}
 
     - name: Run Snyk scan
       uses: snyk/actions@master
