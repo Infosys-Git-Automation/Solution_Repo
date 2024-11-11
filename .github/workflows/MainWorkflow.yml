@@ -1,0 +1,46 @@
+name: Validate and Snyk Scan
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-and-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Get PR details
+      id: pr
+      run: |
+        echo "PR_USER=$(gh pr view ${{ github.event.pull_request.number }} --json author --jq '.author.login')" >> $GITHUB_ENV
+        echo "PR_REPO=${{ github.repository }}" >> $GITHUB_ENV
+
+    - name: Validate user existence in org and repo
+      id: validate
+      run: |
+        ORG=${{ github.repository_owner }}
+        REPO=${{ github.event.repository.name }}
+        USER=$PR_USER
+
+        # Check if user exists in the organization
+        if ! gh api orgs/$ORG/members/$USER; then
+          echo "User $USER does not exist in the organization $ORG"
+          exit 1
+        fi
+
+        # Check if user has owner permissions in the repository
+        USER_PERMISSIONS=$(gh api repos/$ORG/$REPO/collaborators/$USER/permission --jq '.permission')
+        if [ "$USER_PERMISSIONS" != "admin" ]; then
+          echo "User $USER does not have owner permissions in the repository $REPO"
+          exit 1
+        fi
+
+    - name: Run Snyk scan
+      uses: snyk/actions@master
+      with:
+        args: test
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
