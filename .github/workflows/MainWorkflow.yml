@@ -15,6 +15,12 @@ jobs:
         PR_NO=${{ github.event.pull_request.number }}
         PR_BODY=$(gh pr view 1)
         echo "PR_BODY: $PR_BODY"
+        ORG_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Org Name\*\*: \[).*(?=\])')
+        USERNAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Username\*\*: \[).*(?=\])')
+        REPO_NAME=$(echo "$PR_BODY" | grep -oP '(?<=- \*\*Repo Name\*\*: \[).*(?=\])')
+        echo "ORG_NAME=$ORG_NAME" 
+        echo "USERNAME=$USERNAME" 
+        echo "REPO_NAME=$REPO_NAME" 
               
       env:
         GH_TOKEN: ${{ github.token }}
