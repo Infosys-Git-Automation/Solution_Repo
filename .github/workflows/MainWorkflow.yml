@@ -2,7 +2,7 @@ name: Validate and Snyk Scan
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, edited, synchronize, reopened]
 
 jobs:
   validate-and-scan:
