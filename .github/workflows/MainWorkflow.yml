@@ -13,7 +13,7 @@ jobs:
     - name: Get PR details
       run: |
         PR_NO=${{ github.event.pull_request.number }}
-        PR_BODY=$(gh pr view ${{ PR_NO }})
+        PR_BODY=$(gh pr view 1)
         echo "PR_BODY: $PR_BODY"
               
       env:
