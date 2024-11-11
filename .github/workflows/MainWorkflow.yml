@@ -21,6 +21,20 @@ jobs:
         echo "ORG_NAME=$ORG_NAME" 
         echo "USERNAME=$USERNAME" 
         echo "REPO_NAME=$REPO_NAME" 
+
+    - name: Validate user existence in org and repo
+      id: validate
+      run: |
+        ORG=$ORG_NAME
+        REPO=$REPO_NAME
+        USER=$USERNAME
               
+        # Check if user has owner permissions in the repository
+        USER_PERMISSIONS=$(gh api repos/$ORG/$REPO/collaborators/$USER/permission --jq '.permission')
+        if [ "$USER_PERMISSIONS" != "admin" ]; then
+          echo "User $USER does not have owner permissions in the repository $REPO"
+          exit 1
+        fi
+             
       env:
         GH_TOKEN: ${{ github.token }}
